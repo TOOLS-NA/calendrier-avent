@@ -644,7 +644,11 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
     if (demande && /^\d{4}-\d{2}-\d{2}$/.test(demande) && !isNaN(enTemps(demande))) { apercu = demande; aujourdhui = demande; }
   }
   // Mode présentation (?presentation) : toutes les cases s'ouvrent, pour expliquer le principe
-  var presentation = !!cfg.apercuAutorise && new URLSearchParams(location.search).has("presentation");
+  var presentationDemandee = !!cfg.apercuAutorise && new URLSearchParams(location.search).has("presentation");
+  // Avant le début de l'opération, l'adresse normale passe d'elle-même en présentation
+  // (réglage presentationAvantOuverture) ; elle redevient le vrai calendrier le 1er décembre.
+  var presentationAuto = !!cfg.presentationAvantOuverture && !apercu && aujourdhui < ANNEE + "-12-01";
+  var presentation = presentationDemandee || presentationAuto;
 
   /* ---------- Cadeaux : une liste sans date, tirée au sort à chaque ouverture ---------- */
   function chancesDe(c) {
@@ -721,7 +725,12 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
   $("mentions").textContent = cfg.mentions || "";
   $("mentions").hidden = !cfg.mentions;
   if (cfg.demo) $("bandeau-demo").hidden = false;
-  if (presentation) { $("bandeau-apercu").textContent = "Présentation : toutes les cases s'ouvrent. Pendant l'opération, seule la case du jour s'ouvrira."; $("bandeau-apercu").hidden = false; }
+  if (presentation) {
+    $("bandeau-apercu").textContent = presentationAuto && !presentationDemandee
+      ? "Présentation jusqu'au 30 novembre : toutes les cases s'ouvrent. À partir du 1er décembre, seule la case du jour s'ouvrira."
+      : "Présentation : toutes les cases s'ouvrent. Pendant l'opération, seule la case du jour s'ouvrira.";
+    $("bandeau-apercu").hidden = false;
+  }
   else if (apercu) { $("bandeau-apercu").textContent = "Aperçu : le calendrier tel qu'il sera le " + enClair(apercu) + " " + apercu.slice(0, 4) + "."; $("bandeau-apercu").hidden = false; }
 
   var premier = dateDuJour(1), dernier = dateDuJour(DERNIER);
@@ -905,7 +914,7 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
 
   /* ---------- Fonctionnement en continu sur un écran de caisse ---------- */
   // Au changement de jour, la page se recharge : nouvelle case et cadeaux à jour
-  if (!apercu && !presentation) {
+  if (!apercu && !presentationDemandee) {
     setInterval(function () {
       if (aujourdhuiParis() !== aujourdhui && !fenetre.open) location.reload();
     }, 30000);
