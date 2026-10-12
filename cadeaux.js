@@ -13,7 +13,7 @@ window.CALENDRIER = {
     annee: 2026,
 
     // Dernier jour du calendrier : les cases vont du 1er décembre à ce jour-là
-    dernierJour: 19,
+    dernierJour: 17,
 
     // Nom affiché en haut de l'écran
     enseigne: "Narbonne Accessoires",
@@ -52,8 +52,8 @@ window.CALENDRIER = {
     fichierMusique: "",    // joué pendant que le cadeau est affiché (et en fond)
 
     // true  = bandeau « Démonstration » affiché (cadeaux d'exemple)
-    // false = à mettre dès que les vrais cadeaux sont saisis
-    demo: true,
+    // false = vrais cadeaux saisis
+    demo: false,
 
     // true  = autorise l'aperçu d'une date en ajoutant ?apercu=2026-12-05 à l'adresse
     // false = à mettre au lancement, pour que l'aperçu ne fonctionne plus
@@ -61,7 +61,7 @@ window.CALENDRIER = {
   },
 
   /* ------------------------------------------------------------------------
-     LES CADEAUX — une ligne par cadeau, sans date.
+     LES CADEAUX — une ligne par cadeau.
      À chaque ouverture de la case du jour, un cadeau est tiré au sort dans
      cette liste : deux clients le même jour peuvent avoir des cadeaux différents.
 
@@ -75,28 +75,27 @@ window.CALENDRIER = {
                      3 = sort trois fois plus souvent
                      0.2 = rare (cinq fois moins souvent)
                      0 = retiré du tirage sans effacer la ligne
-
-     Les cadeaux ci-dessous sont des EXEMPLES à remplacer.
+       jour        : réserve ce cadeau à un jour de décembre       facultatif
+                     (ce jour-là, tous les clients ont ce cadeau,
+                     et il ne sort jamais les autres jours)
      ------------------------------------------------------------------------ */
   cadeaux: [
-    { titre: "Un sachet de papillotes offert", detail: "Demandez-le à votre conseiller.", chances: 3 },
-    { titre: "−10 % sur votre prochain passage en caisse", detail: "Un bon de réduction vous est remis avec votre ticket.", code: "AVENT10" },
-    { titre: "Un porte-clés offert", detail: "Demandez-le à votre conseiller.", chances: 2 },
-    { titre: "Un désodorisant de cabine offert", detail: "Parfum sapin, évidemment." },
-    { titre: "−20 % sur un produit d'entretien au choix", detail: "Valable sur toute la gamme entretien.", code: "AVENT20" },
-    { titre: "Une lampe de poche offerte", detail: "Toujours utile dans la boîte à gants." },
-    { titre: "Un mug de voyage offert", detail: "Pour le café des départs matinaux." },
-    { titre: "−15 % sur la vaisselle de voyage", detail: "Assiettes, verres et couverts incassables.", code: "AVENT15" },
-    { titre: "Un grattoir à givre offert", detail: "Le pare-brise vous dira merci.", chances: 2 },
-    { titre: "Un sac cabas offert", detail: "Pour emporter vos achats du jour." },
-    { titre: "−15 % sur un article de literie", detail: "Sur-matelas, draps-housses et oreillers.", code: "LITERIE15" },
-    { titre: "Un jeu de cartes offert", detail: "Pour les soirées sur l'aire d'étape." },
-    { titre: "Un carnet de voyage offert", detail: "Notez-y vos plus belles étapes." },
-    { titre: "−25 % sur les accessoires de cuisine", detail: "Réchauds, cafetières et rangements malins.", code: "CUISINE25" },
-    { titre: "Une housse de volant offerte", detail: "Demandez-la à votre conseiller." },
-    { titre: "−10 % sur l'éclairage LED", detail: "Spots, réglettes et lampes baladeuses.", code: "LED10" },
-    { titre: "Une boîte de chocolats offerte", detail: "À partager, ou pas." },
-    { titre: "−20 % sur les idées cadeaux", detail: "Une sélection à glisser sous le sapin.", code: "IDEES20" },
-    { titre: "Le gros lot : un bon d'achat de 50 €", detail: "Bravo ! Votre conseiller vous remet votre bon.", chances: 0.05 }
+    { titre: "Un cadeau surprise", detail: "Dès 75 € d'achat." },
+    { titre: "Entretien TRIMIXTE à 99 € au lieu de 130 €" },
+    { titre: "2 articles achetés, le 3e offert", detail: "Sur une sélection d'articles." },
+    { titre: "−15 % sur le rayon nettoyage et entretien" },
+    { titre: "30 € d'accessoires offerts pour votre VAE", detail: "Pour l'achat d'un VAE." },
+    { titre: "50 € de remise sur votre isolant SOPLAIR" },
+    { titre: "3 AQUAKEM achetés, le 4e offert" },
+    { titre: "L'adaptateur 220 V offert", detail: "Pour l'achat d'une glacière à compression EZA." },
+    { titre: "Le contrôle 7 points de votre camping-car offert", detail: "Dès 150 € d'achat en magasin." },
+    { titre: "−10 % sur l'article de votre choix" },
+    { titre: "Les chaussettes à neige offertes", detail: "Dès 250 € d'achat en magasin." },
+    { titre: "−10 % sur le rayon outdoor", detail: "Tables et chaises." },
+    { titre: "Entretien TRIMIXTE offert", detail: "Pour tout achat supérieur à 200 €." },
+    { titre: "Les cales anti-ovalisation offertes", detail: "Pour l'achat d'une bâche CC / F / Z." },
+
+    // Dernier jour : le même cadeau pour tout le monde
+    { titre: "Le guide ACSI 2027 offert", detail: "Dès 150 € d'achat. Votre guide vous attendra en magasin début 2027.", jour: 17 }
   ]
 };

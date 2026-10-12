@@ -1,6 +1,6 @@
 # Calendrier de l'Avent
 
-Un cadeau tiré au sort chaque jour du 1er au 19 décembre, pensé pour un écran
+Un cadeau tiré au sort chaque jour du 1er au 17 décembre, pensé pour un écran
 de caisse (24 à 32 pouces, en paysage), avec animation et sons. PWA pour
 GitHub Pages : aucun serveur, aucune base de données, aucune dépendance externe.
 
@@ -50,6 +50,9 @@ une simple liste, sans date : à chaque ouverture, l'un d'eux est tiré au sort.
 - `chances` : 1 = normal, 3 = sort trois fois plus souvent, 0.2 = rare,
   0 = retiré du tirage sans effacer la ligne.
 - `jusquau` : date de fin propre à un cadeau ; passé cette date, il ne sort plus.
+- `jour` : réserve un cadeau à un jour de décembre. Ce jour-là, tous les clients
+  ont ce cadeau, et il ne sort jamais les autres jours (ex. le guide ACSI le 17).
+- `dernierJour` dans les réglages : dernier jour du calendrier (17).
 
 ## Les sons
 
@@ -67,6 +70,13 @@ Tous les sons sont fabriqués par le navigateur : grelots, boîte à musique,
   un mp3 dans le dépôt (par exemple dans un dossier `sons/`) et indiquez son
   chemin. Si le fichier est introuvable, le son intégré prend le relais.
 
+## Présenter le principe aux magasins
+
+Ajouter `?presentation` à l'adresse (par exemple
+`https://tools-na.github.io/calendrier-avent/?presentation`) : toutes les cases
+s'ouvrent, avec le suspens, les sons et un cadeau tiré au sort (la case 17 donne
+le guide ACSI). Un bandeau rappelle que c'est une présentation.
+
 ## Tester avant décembre
 
 Ajouter `?apercu=2026-12-05` à l'adresse pour voir le calendrier tel qu'il sera ce jour-là.
@@ -76,7 +86,7 @@ Ajouter `?apercu=2026-12-05` à l'adresse pour voir le calendrier tel qu'il sera
 Dans `cadeaux.js` :
 
 - passer `demo` à `false` (retire le bandeau « Démonstration ») ;
-- passer `apercuAutorise` à `false` (désactive l'aperçu par l'adresse).
+- passer `apercuAutorise` à `false` (désactive l'aperçu et le mode présentation).
 
 ## À savoir
 
