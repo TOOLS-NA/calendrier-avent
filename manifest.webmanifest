@@ -1,0 +1,17 @@
+{
+  "name": "Calendrier de l'Avent Narbonne Accessoires",
+  "short_name": "Avent",
+  "description": "Un cadeau par jour jusqu'à Noël.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#A5132B",
+  "theme_color": "#A5132B",
+  "icons": [
+    { "src": "icons/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icone-masque-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calendrier de l'Avent</title>
+<meta name="description" content="Un cadeau par jour jusqu'à Noël.">
+<meta name="theme-color" content="#A5132B">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icone-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icone-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Avent">
+<style>
+@font-face{font-family:"Barlow";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/barlow-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow";font-weight:600;font-style:normal;font-display:swap;src:url("fonts/barlow-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-style:normal;font-display:swap;src:url("fonts/barlow-condensed-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/barlow-condensed-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Berkshire Swash";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/berkshire-swash-latin-400-normal.woff2") format("woff2")}
+
+:root{
+  --fond:#A5132B;           /* fond de page : rouge Noël */
+  --fond-profond:#6F0B1B;   /* ombres */
+  --sapin:#1F6B4F;          /* vert des cases */
+  --neige:#F8FBF9;
+  --creme:#FBF6EA;
+  --givre:#F7D9D6;          /* texte secondaire sur fond rouge */
+  --encre:#10231B;
+  --rouge:#C8102E;
+  --or:#EDB93C;
+  --texte:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --chiffres:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --fete:"Berkshire Swash","Georgia",serif;
+  --neige-posee:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30' preserveAspectRatio='none'%3E%3Cpath d='M0 0H100V16C94 15 91 25 84 23C77 21 75 12 65 14C56 16 54 27 45 25C37 23 33 12 23 15C14 18 9 23 0 19Z' fill='%23fff'/%3E%3C/svg%3E");
+  --neige-frise:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 30' preserveAspectRatio='none'%3E%3Cpath d='M0 0H100V18C92 16 90 26 82 24C74 22 72 12 62 14C54 16 52 27 43 25C35 23 31 12 21 14C12 16 8 20 0 18Z' fill='%23fff'/%3E%3C/svg%3E");
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--fond) linear-gradient(180deg,#B8182F 0,var(--fond) 420px);
+  color:var(--neige);
+  font:400 1rem/1.5 var(--texte);
+  min-height:100dvh;
+  -webkit-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+
+/* La neige qui tombe, derrière le contenu (trois plans, du plus proche au plus lointain) */
+.neige{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.neige i{
+  position:absolute;left:0;right:0;
+  top:calc(var(--pas) * -1);
+  height:calc(100% + var(--pas));
+  background-size:var(--pas) var(--pas);
+  animation:tomber var(--duree) linear infinite;
+  will-change:transform;
+}
+.neige i:nth-child(1){
+  --pas:260px;--duree:11s;
+  background-image:
+    radial-gradient(circle at 18% 22%,rgba(255,255,255,.8) 0 2.6px,transparent 3.3px),
+    radial-gradient(circle at 71% 58%,rgba(255,255,255,.65) 0 2.1px,transparent 2.8px),
+    radial-gradient(circle at 42% 88%,rgba(255,255,255,.7) 0 2.3px,transparent 3px);
+}
+.neige i:nth-child(2){
+  --pas:340px;--duree:19s;
+  background-image:
+    radial-gradient(circle at 9% 64%,rgba(255,255,255,.6) 0 1.7px,transparent 2.3px),
+    radial-gradient(circle at 33% 12%,rgba(255,255,255,.55) 0 1.5px,transparent 2.1px),
+    radial-gradient(circle at 58% 41%,rgba(255,255,255,.6) 0 1.8px,transparent 2.4px),
+    radial-gradient(circle at 86% 79%,rgba(255,255,255,.5) 0 1.4px,transparent 2px);
+}
+.neige i:nth-child(3){
+  --pas:430px;--duree:30s;
+  background-image:
+    radial-gradient(circle at 12% 35%,rgba(255,255,255,.45) 0 1.1px,transparent 1.7px),
+    radial-gradient(circle at 27% 81%,rgba(255,255,255,.4) 0 1px,transparent 1.6px),
+    radial-gradient(circle at 49% 17%,rgba(255,255,255,.45) 0 1.2px,transparent 1.8px),
+    radial-gradient(circle at 66% 67%,rgba(255,255,255,.4) 0 1px,transparent 1.6px),
+    radial-gradient(circle at 91% 28%,rgba(255,255,255,.45) 0 1.1px,transparent 1.7px);
+}
+@keyframes tomber{to{transform:translateY(var(--pas))}}
+
+.page{
+  position:relative;z-index:1;
+  max-width:62rem;
+  margin:0 auto;
+  padding:0 16px calc(32px + env(safe-area-inset-bottom));
+  padding-left:max(16px,env(safe-area-inset-left));
+  padding-right:max(16px,env(safe-area-inset-right));
+}
+
+/* Bandeaux d'information (démonstration, aperçu) */
+.bandeau{
+  position:relative;z-index:1;
+  margin:0;
+  padding:.5rem 1rem;
+  background:var(--or);
+  color:var(--encre);
+  font-weight:600;
+  font-size:.9375rem;
+  text-align:center;
+}
+.bandeau + .bandeau{border-top:1px solid rgba(16,35,27,.25)}
+
+/* Guirlande lumineuse */
+.guirlande{
+  position:relative;z-index:1;
+  height:36px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='36' viewBox='0 0 168 36'%3E%3Cpath d='M0 3Q84 31 168 3' fill='none' stroke='%235C0816' stroke-width='1.6'/%3E%3Cg%3E%3Ccircle cx='25' cy='16' r='10' fill='%23D6F1FA' opacity='.2'/%3E%3Cellipse cx='25' cy='16' rx='4.2' ry='5.6' fill='%23D6F1FA'/%3E%3Ccircle cx='64' cy='22' r='10' fill='%23F4C84A' opacity='.22'/%3E%3Cellipse cx='64' cy='22' rx='4.2' ry='5.6' fill='%23F4C84A'/%3E%3Ccircle cx='104' cy='22' r='10' fill='%23FFF4D6' opacity='.2'/%3E%3Cellipse cx='104' cy='22' rx='4.2' ry='5.6' fill='%23FFF4D6'/%3E%3Ccircle cx='143' cy='16' r='10' fill='%2352C78E' opacity='.2'/%3E%3Cellipse cx='143' cy='16' rx='4.2' ry='5.6' fill='%2352C78E'/%3E%3C/g%3E%3C/svg%3E") repeat-x center top / auto 100%;
+}
+
+/* En-tête */
+.entete{padding:14px 0 20px}
+.enseigne{
+  margin:0 0 10px;
+  font:600 1.125rem/1.2 var(--chiffres);
+  letter-spacing:.02em;
+  color:var(--or);
+}
+.enseigne img{display:block;height:2.5rem;width:auto}
+h1{
+  margin:0;
+  font:400 clamp(2.5rem,10.5vw,5rem)/1.02 var(--fete);
+  color:var(--creme);
+}
+.etat{
+  margin:14px 0 0;
+  max-width:34rem;
+  font-size:1.125rem;
+}
+
+/* La scène : le fourgon rapporte le sapin, un cran par jour */
+.scene{
+  position:relative;
+  height:108px;
+  margin:8px 0 30px;
+  border-radius:10px;
+  overflow:hidden;
+  container-type:size;
+  background:
+    radial-gradient(circle at 8% 22%,#F4C84A 0 1.4px,transparent 2px),
+    radial-gradient(circle at 23% 12%,#fff 0 1px,transparent 1.6px),
+    radial-gradient(circle at 41% 26%,#F4C84A 0 1.1px,transparent 1.7px),
+    radial-gradient(circle at 58% 10%,#fff 0 1.3px,transparent 1.9px),
+    radial-gradient(circle at 72% 24%,#fff 0 1px,transparent 1.6px),
+    radial-gradient(circle at 90% 9%,#F4C84A 0 1.2px,transparent 1.8px),
+    linear-gradient(180deg,#2B050D,#5E0D1B);
+}
+.scene__sapins{
+  position:absolute;left:0;right:0;bottom:18cqh;height:52cqh;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 112cqh),transparent calc(100% - 62cqh));
+  mask-image:linear-gradient(90deg,#000 calc(100% - 112cqh),transparent calc(100% - 62cqh));
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='56' viewBox='0 0 150 56'%3E%3Cg fill='%231F6249'%3E%3Cpath d='M34 4 47 24H21zM34 15 51 40H17zM34 28 55 56H13z'/%3E%3C/g%3E%3Cg fill='%23184F3B'%3E%3Cpath d='M104 22 113 36H95zM104 30 116 48H92zM104 40 119 56H89z'/%3E%3C/g%3E%3Cg fill='%23fff'%3E%3Cpath d='M34 4 39 11.500 35 10 32 12 29 11.500zM34 15 38.500 21.500 34.500 20 31 22 29.500 21.500zM104 22 107.500 27.500 104.500 26.500 102 28 100.500 27.500z'/%3E%3C/g%3E%3C/svg%3E") repeat-x left bottom / auto 100%;
+}
+.scene__sol{
+  position:absolute;left:0;right:0;bottom:0;height:28cqh;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='30' viewBox='0 0 240 30' preserveAspectRatio='none'%3E%3Cpath d='M0 9C40 0 80 0 120 7C160 14 200 12 240 9V30H0Z' fill='%23F8FBF9'/%3E%3C/svg%3E") repeat-x left top / 222cqh 100%;
+}
+.scene__arbre{position:absolute;right:9cqh;bottom:11cqh;width:46cqh}
+.scene__arbre svg,.fourgon svg{display:block;width:100%;height:auto}
+.fourgon{
+  position:absolute;
+  bottom:6.5cqh;
+  left:4cqh;
+  width:61cqh;
+  transform:translateX(calc(var(--avance,0) * (100cqw - 127cqh)));
+  transition:transform 1.8s cubic-bezier(.2,.7,.2,1);
+}
+
+/* La grille des cases (des bornes enneigées) */
+.bornes{
+  list-style:none;
+  margin:0;padding:0;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px 12px;
+}
+@media (min-width:640px){.bornes{grid-template-columns:repeat(5,minmax(0,1fr));gap:24px 16px}}
+
+.borne{
+  --coiffe:var(--sapin);
+  --coiffe-texte:#fff;
+  --corps:var(--neige);
+  --chiffre:var(--encre);
+  container-type:inline-size;
+  display:grid;
+  grid-template-rows:40% 1fr;
+  width:100%;
+  aspect-ratio:3/4;
+  padding:0;
+  border:0;
+  border-radius:48% 48% 6px 6px / 36% 36% 6px 6px;
+  overflow:hidden;
+  background:var(--corps);
+  color:var(--chiffre);
+  font:inherit;
+  cursor:pointer;
+  box-shadow:0 5px 0 var(--fond-profond);
+  -webkit-tap-highlight-color:transparent;
+}
+.bornes li{display:grid}
+/* Le dernier jour occupe deux places */
+.borne--double{grid-column:span 2}
+.borne--double .borne{aspect-ratio:auto;height:100%;min-height:5rem;border-radius:24% 24% 6px 6px / 36% 36% 6px 6px}
+.borne__coiffe{
+  position:relative;
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:3cqw;
+  background:var(--coiffe);
+  color:var(--coiffe-texte);
+  font:600 max(13px,12cqw)/1 var(--chiffres);
+  letter-spacing:.01em;
+  white-space:nowrap;
+}
+/* La neige posée sur chaque case */
+.borne__coiffe::before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:46%;
+  background:var(--neige-posee) center top / 100% 100% no-repeat;
+}
+.borne__chiffre{
+  display:flex;align-items:center;justify-content:center;
+  font:700 46cqw/1 var(--chiffres);
+}
+.borne--double .borne__coiffe{font-size:max(13px,5.8cqw);padding-bottom:1.5cqw}
+.borne--double .borne__chiffre{font-size:22.500cqw}
+
+.borne:focus-visible,
+.bouton:focus-visible{outline:3px solid var(--or);outline-offset:3px}
+
+.borne[data-etat="verrou"]{--corps:#EBD9C1;--chiffre:#174534;--coiffe:var(--sapin);cursor:default;box-shadow:none}
+.borne[data-etat="jour"]{
+  --coiffe:var(--or);--coiffe-texte:var(--encre);
+  box-shadow:0 5px 0 var(--fond-profond),0 0 0 3px var(--fond),0 0 0 6px var(--or);
+  animation:appel 2.4s ease-in-out infinite;
+}
+.borne[data-etat="terminee"]{--corps:#C98A8F;--chiffre:#5E0A18;--coiffe:#7A1022;cursor:default;box-shadow:none}
+.borne[data-etat="terminee"] .borne__coiffe::before{opacity:.75}
+/* La case du jour fait signe */
+@keyframes appel{
+  0%,100%{box-shadow:0 5px 0 var(--fond-profond),0 0 0 3px var(--fond),0 0 0 6px var(--or),0 0 0 0 rgba(237,185,60,0)}
+  50%{box-shadow:0 5px 0 var(--fond-profond),0 0 0 3px var(--fond),0 0 0 8px var(--or),0 0 26px 10px rgba(237,185,60,.45)}
+}
+
+/* Légende et pied de page */
+.pied{
+  margin-top:28px;
+  font-size:.875rem;
+  color:var(--givre);
+}
+.legende{
+  list-style:none;
+  display:flex;flex-wrap:wrap;gap:8px 20px;
+  margin:0 0 20px;padding:0;
+  font-size:.9375rem;
+}
+.legende li{display:flex;align-items:center;gap:8px}
+.legende i{width:.9em;height:.9em;border-radius:50% 50% 2px 2px;background:var(--c);box-shadow:0 0 0 1px rgba(251,246,234,.45)}
+.pied p{margin:0 0 12px;max-width:44rem;padding-top:16px;border-top:1px solid rgba(255,255,255,.3)}
+.pied__boutons{display:flex;flex-wrap:wrap;gap:10px}
+
+/* Boutons */
+.bouton{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:3rem;
+  padding:0 1.25rem;
+  border:2px solid transparent;
+  border-radius:.5rem;
+  font:600 1rem/1 var(--texte);
+  cursor:pointer;
+}
+.bouton--contour{background:transparent;color:var(--encre);border-color:var(--encre)}
+.bouton--clair{min-height:2.5rem;background:transparent;color:var(--neige);border-color:rgba(255,255,255,.65);font-size:.875rem}
+
+/* ---------- L'ouverture d'une case : suspens, puis le cadeau ---------- */
+dialog{
+  position:fixed;inset:0;
+  width:100vw;height:100dvh;max-width:none;max-height:none;
+  margin:0;padding:16px;
+  border:0;
+  background:transparent;
+  color:var(--encre);
+  overflow:hidden;
+}
+dialog[open]{display:grid;place-items:center}
+dialog::backdrop{background:rgba(38,4,11,.92)}
+#confettis{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+
+.suspense{display:none;justify-items:center;gap:4vh;text-align:center;cursor:pointer}
+dialog[data-phase="suspense"] .suspense,
+dialog[data-phase="eclat"] .suspense{display:grid}
+.suspense__titre{
+  margin:0;
+  font:400 clamp(1.9rem,6vh,4.5rem)/1.1 var(--fete);
+  color:var(--creme);
+  transition:opacity .2s;
+}
+.suspense__paquet{position:relative;width:min(40vh,64vw)}
+.suspense__paquet::before{
+  content:"";
+  position:absolute;inset:-30%;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(244,200,74,.6),rgba(244,200,74,0) 62%);
+  animation:halo .7s ease-in-out infinite alternate;
+}
+.cadeau{position:relative;display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 100%}
+.cadeau__boite,.cadeau__couvercle{transform-box:fill-box}
+.cadeau__boite{transform-origin:50% 100%}
+.cadeau__couvercle{transform-origin:50% 50%}
+
+dialog[data-phase="suspense"] .cadeau{
+  animation:arrivee .45s cubic-bezier(.3,1.5,.5,1) both,secousse 1.8s .5s ease-in-out both;
+}
+@keyframes arrivee{from{scale:.2;opacity:0}to{scale:1;opacity:1}}
+/* Trois salves de plus en plus fortes, séparées par un silence */
+@keyframes secousse{
+  0%,6%{rotate:0deg;translate:0 0}
+  11%{rotate:-4deg}
+  16%{rotate:4deg}
+  21%,34%{rotate:0deg;translate:0 0}
+  39%{rotate:-7deg;translate:0 -2%}
+  44%{rotate:7deg;translate:0 0}
+  49%{rotate:-7deg;translate:0 -2%}
+  54%,66%{rotate:0deg;translate:0 0}
+  70%{rotate:-11deg;translate:0 -4%}
+  75%{rotate:11deg;translate:0 0}
+  80%{rotate:-12deg;translate:0 -5%}
+  85%{rotate:12deg;translate:0 0}
+  90%{rotate:-9deg;translate:0 -3%}
+  95%{rotate:6deg}
+  100%{rotate:0deg;translate:0 0}
+}
+@keyframes halo{from{scale:.75;opacity:.45}to{scale:1.1;opacity:1}}
+
+dialog[data-phase="eclat"] .suspense__titre{opacity:0}
+dialog[data-phase="eclat"] .cadeau__couvercle{animation:couvercle .5s cubic-bezier(.2,.8,.3,1) forwards}
+dialog[data-phase="eclat"] .cadeau__boite{animation:boite .5s ease-out forwards}
+dialog[data-phase="eclat"] .suspense__paquet::before{animation:eclair .5s ease-out forwards}
+@keyframes couvercle{to{translate:-40px -210px;rotate:-32deg;opacity:0}}
+@keyframes boite{35%{scale:1.14 .9;opacity:1}to{scale:1.3 1.3;opacity:0}}
+@keyframes eclair{from{scale:1;opacity:1}to{scale:2.6;opacity:0}}
+
+.carte{
+  display:none;
+  position:relative;
+  width:min(40rem,100%);
+  max-height:100%;
+  border-radius:1.125rem;
+  background:var(--creme);
+  overflow:auto;
+  box-shadow:0 1.5rem 4rem rgba(0,0,0,.45);
+}
+dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes surgir{from{scale:.6;opacity:0}to{scale:1;opacity:1}}
+.carte__date{
+  position:relative;
+  margin:0;
+  padding:2.1rem 1.75rem .8rem;
+  background:var(--sapin);
+  color:#fff;
+  font:600 1.375rem/1.2 var(--chiffres);
+}
+.carte__date::before{
+  content:"";
+  position:absolute;left:0;right:0;top:0;height:1.4rem;
+  background:var(--neige-frise) left top / 8rem 100% repeat-x;
+}
+.carte__corps{padding:1.5rem 1.75rem 1.75rem}
+.carte__titre{
+  margin:0 0 .75rem;
+  font:700 clamp(2rem,7vw,3rem)/1.04 var(--chiffres);
+  text-wrap:balance;
+}
+.carte__detail{margin:0 0 1.25rem;font-size:1.25rem;line-height:1.4}
+.carte__validite{margin:0 0 1.25rem;font-weight:600;font-size:1.0625rem}
+.carte__conditions{margin:1.25rem 0 0;font-size:.9375rem;color:#46594F}
+.coupon{
+  display:flex;align-items:baseline;justify-content:space-between;gap:.75rem 1.5rem;flex-wrap:wrap;
+  margin:0 0 1.25rem;
+  padding:.9rem 1.1rem;
+  border:2px dashed var(--rouge);
+  border-radius:.5rem;
+  background:#fff;
+}
+.coupon__libelle{font-size:1rem;color:#46594F}
+.coupon__code{font:700 2.25rem/1 var(--chiffres);letter-spacing:.06em}
+.carte .bouton{width:100%;min-height:3.5rem;font-size:1.125rem}
+/* Le trait qui se vide : l'écran revient tout seul au calendrier */
+.carte__retour{
+  position:absolute;left:0;right:0;bottom:0;height:.375rem;
+  background:var(--or);
+  transform-origin:0 50%;
+}
+@keyframes retour{from{scale:1 1}to{scale:0 1}}
+
+/* Message bref (case pas encore ouverte, cadeau terminé) */
+.message{
+  position:fixed;
+  left:50%;bottom:calc(1.5rem + env(safe-area-inset-bottom));
+  transform:translateX(-50%);
+  max-width:calc(100% - 32px);
+  padding:.8rem 1.2rem;
+  border-radius:.5rem;
+  background:var(--creme);
+  color:var(--encre);
+  font-weight:600;
+  font-size:1.125rem;
+  text-align:center;
+  box-shadow:0 8px 24px rgba(38,4,11,.5);
+  z-index:10;
+}
+.message:empty{display:none}
+
+[hidden]{display:none !important}
+
+/* ---------- Grand écran vertical (totem) : on agrandit tout ---------- */
+@media (min-width:900px) and (orientation:portrait){
+  html{font-size:clamp(16px,1.9vw,36px)}
+  .page{max-width:none;padding-left:4vw;padding-right:4vw}
+  .scene{height:9vh}
+}
+
+/* ---------- Écran de caisse en paysage : tout tient sans défilement ---------- */
+@media (min-width:1000px) and (orientation:landscape){
+  html{font-size:clamp(16px,1.75vh,40px)}
+  html,body{height:100%}
+  body{display:flex;flex-direction:column;overflow:hidden}
+  .guirlande{flex:none;height:clamp(36px,4.6vh,80px)}
+  .bandeau{flex:none}
+  .page{
+    flex:1;min-height:0;
+    width:100%;max-width:none;
+    display:grid;
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    padding:0 3vw 2vh;
+  }
+  .entete{
+    display:flex;align-items:flex-end;justify-content:space-between;gap:4vw;
+    padding:.5vh 0 2vh;
+  }
+  .enseigne{margin-bottom:.6vh;font-size:1.6rem}
+  h1{font-size:min(11vh,6.2vw);white-space:nowrap}
+  .etat{margin:0 0 1.4vh;max-width:19em;font-size:1.75rem;line-height:1.3;text-align:right}
+  .scene{height:14vh;margin:0 0 2.6vh;border-radius:1.4vh}
+
+  .plateau{container-type:size;min-height:0}
+  .bornes{
+    --g:1.5cqw;
+    --u:min(calc((100cqw - (var(--colonnes,10) - 1) * var(--g)) / var(--colonnes,10)),calc((100cqh - var(--g) - 12px) / 2 * .75));
+    grid-template-columns:repeat(var(--colonnes,10),var(--u));
+    gap:var(--g);
+    justify-content:center;
+    align-content:center;
+    height:100%;
+  }
+  .pied{
+    display:flex;align-items:center;gap:2rem;
+    margin-top:1.6vh;
+    padding-top:1.2vh;
+    border-top:1px solid rgba(255,255,255,.3);
+  }
+  .legende{margin:0;font-size:1rem;flex:none}
+  .pied p{flex:1;margin:0;padding:0;border:0;max-width:none;text-align:right;font-size:.9375rem}
+  .pied__boutons{flex:none}
+
+  /* Le cadeau se lit de loin */
+  .carte{width:min(56rem,100%)}
+  .carte__date{font-size:1.75rem;padding:2.4rem 2.5rem 1rem}
+  .carte__corps{padding:2rem 2.5rem 2.5rem}
+  .carte__titre{font-size:4.25rem;margin-bottom:1rem}
+  .carte__detail{font-size:1.75rem;margin-bottom:1.75rem}
+  .carte__validite{font-size:1.375rem;margin-bottom:1.75rem}
+  .carte__conditions{font-size:1.125rem}
+  .coupon{padding:1.1rem 1.5rem;margin-bottom:1.75rem}
+  .coupon__libelle{font-size:1.375rem}
+  .coupon__code{font-size:3.25rem}
+  .carte .bouton{min-height:4.25rem;font-size:1.375rem}
+  .message{font-size:1.5rem;padding:1rem 1.6rem;bottom:4vh}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .neige i{animation:none}
+  .fourgon{transition:none}
+  .borne[data-etat="jour"]{animation:none}
+  dialog[data-phase="carte"] .carte{animation:none}
+}
+</style>
+</head>
+<body>
+
+<div class="neige" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<p class="bandeau" id="bandeau-demo" hidden>Démonstration : les cadeaux affichés sont des exemples.</p>
+<p class="bandeau" id="bandeau-apercu" hidden></p>
+
+<div class="guirlande" aria-hidden="true"></div>
+
+<div class="page">
+  <header class="entete">
+    <div>
+      <p class="enseigne" id="enseigne"></p>
+      <h1>Calendrier de l'Avent</h1>
+    </div>
+    <p class="etat" id="etat"></p>
+  </header>
+
+  <div class="scene" aria-hidden="true">
+    <div class="scene__sapins"></div>
+    <div class="scene__arbre">
+      <svg viewBox="0 0 52 78" xmlns="http://www.w3.org/2000/svg">
+        <rect x="22" y="66" width="8" height="12" fill="#5A3A22"/>
+        <path d="M26 10 38 30H14zM26 22 43 48H9zM26 38 48 70H4z" fill="#2F9068"/>
+        <path d="M26 1 27.760 5.570 32.660 5.840 28.850 8.930 30.110 13.660 26 11 21.890 13.660 23.150 8.930 19.340 5.840 24.240 5.570z" fill="#F4C84A"/>
+        <g fill="#E5324B"><circle cx="22" cy="26" r="2.300"/><circle cx="18" cy="44" r="2.300"/><circle cx="36" cy="60" r="2.300"/><circle cx="30" cy="34" r="2.300"/></g>
+        <g fill="#F4C84A"><circle cx="31" cy="42" r="2.300"/><circle cx="23" cy="57" r="2.300"/><circle cx="13" cy="64" r="2.300"/></g>
+        <g fill="#FFF4D6"><circle cx="25" cy="48" r="2"/><circle cx="41" cy="65" r="2"/><circle cx="28" cy="22" r="1.800"/></g>
+      </svg>
+    </div>
+    <div class="scene__sol"></div>
+    <div class="fourgon" id="fourgon">
+      <svg viewBox="0 -9 66 39" xmlns="http://www.w3.org/2000/svg">
+        <rect x="11" y="-3.500" width="7" height="2.400" fill="#5A3A22"/>
+        <path d="M17-8.500 47 0 17 2z" fill="#2F9068"/>
+        <path d="M17-8.500 22-7.100 22 1.650 17 2z" fill="#237654"/>
+        <path d="M27-5.700v7.200M37-2.850v4.200" stroke="#F4C84A" stroke-width="1.200" fill="none"/>
+        <path d="M3 5.500A3.500 3.500 0 0 1 6.500 2H44c2.200 0 4.200 1.100 5.400 3l6.800 10.200 4.300 1.400a3.500 3.500 0 0 1 2.400 3.300V22.500a2 2 0 0 1-2 2H3z" fill="#FBF6EA"/>
+        <path d="M3 13h60v3H3z" fill="#C8102E"/>
+        <path d="M43 5h1.200c1.200 0 2.300.6 3 1.600L51.500 13H43z" fill="#3A0810"/>
+        <rect x="9" y="5" width="13" height="6" rx="1.200" fill="#3A0810"/>
+        <rect x="26" y="5" width="11" height="6" rx="1.200" fill="#3A0810"/>
+        <circle cx="15" cy="24.500" r="5" fill="#10231B"/><circle cx="15" cy="24.500" r="2" fill="#BCD2C4"/>
+        <circle cx="49" cy="24.500" r="5" fill="#10231B"/><circle cx="49" cy="24.500" r="2" fill="#BCD2C4"/>
+      </svg>
+    </div>
+  </div>
+
+  <main class="plateau">
+    <ol class="bornes" id="bornes" aria-label="Les cases du calendrier"></ol>
+  </main>
+
+  <footer class="pied">
+    <ul class="legende" aria-label="Légende">
+      <li><i style="--c:var(--or)"></i>Cadeau du jour</li>
+      <li><i style="--c:#EBD9C1"></i>À venir</li>
+      <li><i style="--c:#C98A8F"></i>Terminée</li>
+    </ul>
+    <p id="mentions"></p>
+    <div class="pied__boutons">
+      <button class="bouton bouton--clair" id="son" type="button" aria-pressed="true" hidden>Son activé</button>
+      <button class="bouton bouton--clair" id="plein-ecran" type="button" hidden>Plein écran</button>
+      <button class="bouton bouton--clair" id="installer" type="button" hidden>Installer</button>
+    </div>
+  </footer>
+</div>
+
+<dialog id="revelation" aria-labelledby="carte-titre">
+  <canvas id="confettis" aria-hidden="true"></canvas>
+
+  <div class="suspense" id="suspense">
+    <p class="suspense__titre" id="suspense-titre"></p>
+    <div class="suspense__paquet">
+      <svg class="cadeau" viewBox="0 0 200 210" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g class="cadeau__boite">
+          <rect x="32" y="96" width="136" height="106" rx="8" fill="#1F7A57"/>
+          <rect x="32" y="96" width="136" height="16" fill="#155C41"/>
+          <rect x="88" y="96" width="24" height="106" fill="#EDB93C"/>
+          <rect x="88" y="96" width="24" height="16" fill="#C9972A"/>
+        </g>
+        <g class="cadeau__couvercle">
+          <path d="M100 68C84 34 44 28 48 52C51 68 82 70 100 68Z" fill="#EDB93C"/>
+          <path d="M100 68C116 34 156 28 152 52C149 68 118 70 100 68Z" fill="#EDB93C"/>
+          <path d="M100 66C90 50 70 44 66 52C64 60 84 64 100 66Z" fill="#C9972A"/>
+          <path d="M100 66C110 50 130 44 134 52C136 60 116 64 100 66Z" fill="#C9972A"/>
+          <rect x="22" y="66" width="156" height="36" rx="8" fill="#2F9068"/>
+          <rect x="86" y="66" width="28" height="36" fill="#F4C84A"/>
+          <circle cx="100" cy="64" r="10" fill="#F4C84A"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <article class="carte" id="carte">
+    <p class="carte__date" id="carte-date"></p>
+    <div class="carte__corps">
+      <h2 class="carte__titre" id="carte-titre"></h2>
+      <p class="carte__detail" id="carte-detail"></p>
+      <p class="coupon" id="carte-coupon">
+        <span class="coupon__libelle">Code caisse</span>
+        <span class="coupon__code" id="carte-code"></span>
+      </p>
+      <p class="carte__validite" id="carte-validite"></p>
+      <button class="bouton bouton--contour" id="fermer" type="button">Fermer</button>
+      <p class="carte__conditions" id="carte-conditions"></p>
+    </div>
+    <div class="carte__retour" id="retour" hidden></div>
+  </article>
+</dialog>
+
+<p class="message" id="message" role="status" aria-live="polite"></p>
+
+<script src="cadeaux.js"></script>
+<script src="sons.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var donnees = window.CALENDRIER || { config: {}, cadeaux: [] };
+  var cfg = donnees.config || {};
+  var ANNEE = cfg.annee || new Date().getFullYear();
+  var DERNIER = Math.min(24, Math.max(1, cfg.dernierJour || 24));
+  var DUREE = Math.max(1, cfg.dureeValiditeJours || 1);
+  var RETOUR = cfg.retourAutoSecondes == null ? 40 : Math.max(0, cfg.retourAutoSecondes);
+  var SANS_ANIMATION = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  var $ = function (id) { return document.getElementById(id); };
+
+  /* ---------- Dates (toujours à l'heure de Paris, au format AAAA-MM-JJ) ---------- */
+  function aujourdhuiParis() {
+    try {
+      return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Paris", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    } catch (e) {
+      var d = new Date();
+      return d.getFullYear() + "-" + deux(d.getMonth() + 1) + "-" + deux(d.getDate());
+    }
+  }
+  function deux(n) { return (n < 10 ? "0" : "") + n; }
+  function enTemps(iso) { var p = iso.split("-"); return Date.UTC(+p[0], +p[1] - 1, +p[2]); }
+  function plusJours(iso, n) { return new Date(enTemps(iso) + n * 864e5).toISOString().slice(0, 10); }
+  function ecart(a, b) { return Math.round((enTemps(b) - enTemps(a)) / 864e5); }
+  var MOIS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+  function enClair(iso) {
+    var p = iso.split("-"), j = +p[2];
+    return (j === 1 ? "1er" : j) + " " + MOIS[+p[1] - 1];
+  }
+  function dateDuJour(jour) { return ANNEE + "-12-" + deux(jour); }
+
+  var aujourdhui = aujourdhuiParis();
+  var apercu = null;
+  if (cfg.apercuAutorise) {
+    var demande = new URLSearchParams(location.search).get("apercu");
+    if (demande && /^\d{4}-\d{2}-\d{2}$/.test(demande) && !isNaN(enTemps(demande))) { apercu = demande; aujourdhui = demande; }
+  }
+
+  /* ---------- Cadeaux : une liste sans date, tirée au sort à chaque ouverture ---------- */
+  function chancesDe(c) {
+    var n = c.chances == null ? 1 : Number(c.chances);
+    return isFinite(n) && n > 0 ? n : 0;
+  }
+  function finDeValidite(c) {
+    if (c && c.jusquau && /^\d{4}-\d{2}-\d{2}$/.test(c.jusquau)) return c.jusquau;
+    return plusJours(aujourdhui, DUREE - 1);
+  }
+  // Un cadeau dont la date de fin est déjà passée ne sort plus
+  var reserve = (donnees.cadeaux || []).filter(function (c) {
+    return c && c.titre && chancesDe(c) > 0 && finDeValidite(c) >= aujourdhui;
+  });
+  function tirer() {
+    var total = 0, i;
+    for (i = 0; i < reserve.length; i++) total += chancesDe(reserve[i]);
+    if (!total) return null;
+    var r = Math.random() * total;
+    for (i = 0; i < reserve.length; i++) { r -= chancesDe(reserve[i]); if (r < 0) return reserve[i]; }
+    return reserve[reserve.length - 1];
+  }
+  function etatDe(jour) {
+    var d = dateDuJour(jour);
+    if (aujourdhui < d) return "verrou";
+    return aujourdhui > d ? "terminee" : "jour";
+  }
+  var LIBELLES = { verrou: "déc.", jour: "Aujourd'hui", terminee: "Terminée" };
+  var VOIX = {
+    verrou: "pas encore disponible",
+    jour: "case du jour, à ouvrir",
+    terminee: "case passée"
+  };
+
+  /* ---------- Affichage des cases ---------- */
+  var liste = $("bornes");
+  // Sur l'écran de caisse : deux rangées, la dernière case comptant double
+  liste.style.setProperty("--colonnes", Math.ceil((DERNIER + 1) / 2));
+
+  for (var j = 1; j <= DERNIER; j++) {
+    (function (jour) {
+      var e = etatDe(jour);
+      var li = document.createElement("li");
+      if (jour === DERNIER && DERNIER > 1) li.className = "borne--double";
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "borne";
+      b.dataset.etat = e;
+      b.setAttribute("aria-label", enClair(dateDuJour(jour)) + " : " + VOIX[e]);
+      if (e === "verrou" || e === "terminee") b.setAttribute("aria-disabled", "true");
+      var coiffe = document.createElement("span"); coiffe.className = "borne__coiffe"; coiffe.textContent = LIBELLES[e];
+      var chiffre = document.createElement("span"); chiffre.className = "borne__chiffre"; chiffre.textContent = jour;
+      b.appendChild(coiffe); b.appendChild(chiffre);
+      b.addEventListener("click", function () { toucher(jour); });
+      li.appendChild(b); liste.appendChild(li);
+    })(j);
+  }
+
+  /* ---------- En-tête ---------- */
+  var enseigne = $("enseigne");
+  if (cfg.logo) {
+    var img = document.createElement("img"); img.src = cfg.logo; img.alt = cfg.enseigne || "";
+    enseigne.appendChild(img);
+  } else if (cfg.enseigne) { enseigne.textContent = cfg.enseigne; } else { enseigne.hidden = true; }
+  if (cfg.enseigne) document.title = "Calendrier de l'Avent " + cfg.enseigne;
+  $("mentions").textContent = cfg.mentions || "";
+  $("mentions").hidden = !cfg.mentions;
+  if (cfg.demo) $("bandeau-demo").hidden = false;
+  if (apercu) { $("bandeau-apercu").textContent = "Aperçu : le calendrier tel qu'il sera le " + enClair(apercu) + " " + apercu.slice(0, 4) + "."; $("bandeau-apercu").hidden = false; }
+
+  var premier = dateDuJour(1), dernier = dateDuJour(DERNIER);
+  var etat = $("etat"), avance = 0;
+  if (aujourdhui < premier) {
+    var reste = ecart(aujourdhui, premier);
+    etat.textContent = "Un cadeau par jour du 1er au " + DERNIER + " décembre. Première case à ouvrir " + (reste === 1 ? "demain." : "dans " + reste + " jours.");
+  } else if (aujourdhui <= dernier) {
+    var n = +aujourdhui.slice(8);
+    etat.textContent = "Touchez la case " + n + " pour découvrir le cadeau du jour.";
+    avance = (n - 0.5) / DERNIER;
+  } else {
+    etat.textContent = "Le calendrier " + ANNEE + " est terminé. Joyeuses fêtes et bonne route !";
+    avance = 1;
+  }
+  // Le fourgon part de la gauche et roule vers le sapin, jusqu'à la date du jour
+  requestAnimationFrame(function () { requestAnimationFrame(function () { $("fourgon").style.setProperty("--avance", avance); }); });
+
+  /* ---------- Message bref ---------- */
+  var message = $("message"), minuteurMessage;
+  function dire(texte) {
+    message.textContent = texte;
+    clearTimeout(minuteurMessage);
+    minuteurMessage = setTimeout(function () { message.textContent = ""; }, 3200);
+  }
+
+  /* ---------- Ouverture d'une case ---------- */
+  var fenetre = $("revelation"), carte = $("carte");
+  var minuteries = [];
+  function plusTard(f, ms) { minuteries.push(setTimeout(f, ms)); }
+  function toutArreter() { minuteries.forEach(clearTimeout); minuteries = []; }
+  function phase(p) { fenetre.dataset.phase = p; }
+
+  function toucher(jour) {
+    var e = etatDe(jour);
+    if (e === "verrou") { dire("Cette case s'ouvre le " + enClair(dateDuJour(jour)) + "."); return; }
+    if (e === "terminee") { dire("La case du " + enClair(dateDuJour(jour)) + " est passée."); return; }
+    remplir(jour, tirer());
+    toutArreter();
+    message.textContent = "";
+    if (SANS_ANIMATION) { phase("carte"); Sons.eclat(); }
+    else { phase("suspense"); Sons.suspense(); plusTard(eclater, 2350); }
+    if (typeof fenetre.showModal === "function") { if (!fenetre.open) fenetre.showModal(); } else fenetre.setAttribute("open", "");
+    if (SANS_ANIMATION) armerRetour();
+  }
+
+  function remplir(jour, c) {
+    c = c || {};
+    var fin = finDeValidite(c);
+    $("suspense-titre").textContent = "Quel sera votre cadeau ?";
+    $("carte-date").textContent = "Votre cadeau du " + enClair(dateDuJour(jour));
+    $("carte-titre").textContent = c.titre || "Le cadeau du jour arrive bientôt";
+    $("carte-detail").textContent = c.detail || "";
+    $("carte-detail").hidden = !c.detail;
+    $("carte-coupon").hidden = !c.code;
+    $("carte-code").textContent = c.code || "";
+    var validite = $("carte-validite");
+    validite.hidden = !c.titre;
+    validite.textContent = fin === aujourdhui ? "Valable aujourd'hui uniquement." : "Valable jusqu'au " + enClair(fin) + " inclus.";
+    $("carte-conditions").textContent = c.conditions || "";
+    $("carte-conditions").hidden = !c.conditions;
+  }
+
+  // Le couvercle saute, les confettis partent, puis le cadeau apparaît
+  function eclater() {
+    if (fenetre.dataset.phase !== "suspense") return;
+    toutArreter();
+    phase("eclat");
+    Sons.eclat();
+    lancerConfettis();
+    plusTard(reveler, 480);
+  }
+  function reveler() {
+    phase("carte");
+    try { $("fermer").focus({ preventScroll: true }); } catch (e) {}
+    armerRetour();
+  }
+  // Retour automatique au calendrier, prêt pour le client suivant
+  function armerRetour() {
+    var trait = $("retour");
+    if (RETOUR > 0) {
+      trait.hidden = false;
+      trait.style.animation = "none";
+      void trait.offsetWidth;
+      trait.style.animation = "retour " + RETOUR + "s linear forwards";
+      plusTard(fermer, RETOUR * 1000);
+    } else { trait.hidden = true; }
+  }
+  function fermer() {
+    if (typeof fenetre.close === "function") { if (fenetre.open) fenetre.close(); }
+    else { fenetre.removeAttribute("open"); nettoyer(); }
+  }
+  function nettoyer() { toutArreter(); arreterConfettis(); Sons.arreter(); phase(""); }
+
+  fenetre.addEventListener("close", nettoyer);
+  $("fermer").addEventListener("click", fermer);
+  // Toucher pendant le suspens ouvre tout de suite ; toucher hors de la carte la referme
+  fenetre.addEventListener("click", function (ev) {
+    var p = fenetre.dataset.phase;
+    if (p === "suspense") { eclater(); return; }
+    if (p === "carte" && !carte.contains(ev.target)) fermer();
+  });
+  fenetre.addEventListener("keydown", function (ev) {
+    if (fenetre.dataset.phase === "suspense" && (ev.key === "Enter" || ev.key === " ")) { ev.preventDefault(); eclater(); }
+  });
+
+  /* ---------- Confettis ---------- */
+  var toile = $("confettis"), ctx = toile.getContext("2d"), boucle = null;
+  var TEINTES = ["#C8102E", "#EDB93C", "#2F9068", "#FFFFFF", "#E5324B", "#F4C84A"];
+  function arreterConfettis() {
+    if (boucle) cancelAnimationFrame(boucle);
+    boucle = null;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, toile.width, toile.height);
+  }
+  function lancerConfettis() {
+    arreterConfettis();
+    var r = Math.min(window.devicePixelRatio || 1, 2), L = window.innerWidth, H = window.innerHeight;
+    toile.width = L * r; toile.height = H * r;
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+    var k = Math.max(1, H / 900), grains = [];
+    for (var i = 0; i < 180; i++) {
+      var angle = Math.random() * Math.PI * 2, elan = (5 + Math.random() * 15) * k;
+      grains.push({
+        x: L / 2, y: H * 0.52,
+        vx: Math.cos(angle) * elan, vy: Math.sin(angle) * elan - 8 * k,
+        taille: (7 + Math.random() * 9) * k,
+        teinte: TEINTES[i % TEINTES.length],
+        tour: Math.random() * 6.28, vtour: (Math.random() - 0.5) * 0.4,
+        rond: i % 4 === 0
+      });
+    }
+    var DUREE_S = 3.4, debut = performance.now(), avant = debut;
+    function image(maintenant) {
+      var pas = Math.min(40, maintenant - avant) / 16.7; avant = maintenant;
+      var age = (maintenant - debut) / 1000;
+      ctx.clearRect(0, 0, L, H);
+      ctx.globalAlpha = Math.max(0, Math.min(1, (DUREE_S - age) / 0.8));
+      for (var i = 0; i < grains.length; i++) {
+        var g = grains[i], frein = Math.pow(0.985, pas);
+        g.vy += 0.42 * k * pas; g.vx *= frein; g.vy *= frein;
+        g.x += g.vx * pas; g.y += g.vy * pas; g.tour += g.vtour * pas;
+        ctx.save();
+        ctx.translate(g.x, g.y); ctx.rotate(g.tour);
+        ctx.fillStyle = g.teinte;
+        if (g.rond) { ctx.beginPath(); ctx.arc(0, 0, g.taille / 2.4, 0, 6.29); ctx.fill(); }
+        else { var h = g.taille / 2 * (0.35 + 0.65 * Math.abs(Math.cos(age * 7 + g.tour))); ctx.fillRect(-g.taille / 2, -h / 2, g.taille, h); }
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+      if (age < DUREE_S) boucle = requestAnimationFrame(image); else arreterConfettis();
+    }
+    boucle = requestAnimationFrame(image);
+  }
+
+  /* ---------- Sons ---------- */
+  Sons.reglages({ volume: cfg.volume, fichierOhoo: cfg.fichierOhoo, fichierMusique: cfg.fichierMusique, musiqueDeFond: cfg.musiqueDeFond });
+  var CLE_SON = "avent-son", boutonSon = $("son");
+  var sonActif = cfg.son !== false;
+  try { var memo = localStorage.getItem(CLE_SON); if (memo === "0" || memo === "1") sonActif = memo === "1"; } catch (e) {}
+  function majSon() {
+    Sons.activer(sonActif);
+    boutonSon.textContent = sonActif ? "Son activé" : "Son coupé";
+    boutonSon.setAttribute("aria-pressed", sonActif ? "true" : "false");
+  }
+  if (Sons.disponible()) {
+    boutonSon.hidden = false;
+    majSon();
+    boutonSon.addEventListener("click", function () {
+      sonActif = !sonActif;
+      try { localStorage.setItem(CLE_SON, sonActif ? "1" : "0"); } catch (e) {}
+      majSon();
+      if (sonActif) Sons.demarrerFond();
+    });
+    // Les navigateurs n'autorisent le son qu'après un premier toucher : la musique de fond démarre alors
+    document.addEventListener("pointerdown", function () { Sons.demarrerFond(); }, { once: true, capture: true });
+  }
+
+  /* ---------- Fonctionnement en continu sur un écran de caisse ---------- */
+  // Au changement de jour, la page se recharge : nouvelle case et cadeaux à jour
+  if (!apercu) {
+    setInterval(function () {
+      if (aujourdhuiParis() !== aujourdhui && !fenetre.open) location.reload();
+    }, 30000);
+  }
+  // Empêche l'écran de se mettre en veille tant que le calendrier est affiché
+  function garderAllume() {
+    if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+    try { navigator.wakeLock.request("screen").catch(function () {}); } catch (e) {}
+  }
+  garderAllume();
+  document.addEventListener("visibilitychange", garderAllume);
+
+  // Plein écran
+  var boutonPlein = $("plein-ecran"), racine = document.documentElement;
+  if (racine.requestFullscreen && document.fullscreenEnabled !== false) {
+    var majPlein = function () { boutonPlein.hidden = !!document.fullscreenElement; };
+    majPlein();
+    document.addEventListener("fullscreenchange", majPlein);
+    boutonPlein.addEventListener("click", function () { racine.requestFullscreen().catch(function () {}); });
+  }
+
+  // Installation en application
+  var invitation = null, installer = $("installer");
+  window.addEventListener("beforeinstallprompt", function (ev) { ev.preventDefault(); invitation = ev; installer.hidden = false; });
+  installer.addEventListener("click", function () {
+    if (!invitation) return;
+    invitation.prompt();
+    invitation = null; installer.hidden = true;
+  });
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
+  }
+})();
+</script>
+</body>
+</html>
