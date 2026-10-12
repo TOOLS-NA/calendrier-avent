@@ -203,7 +203,7 @@ h1{
 .bornes li{display:grid}
 /* Le dernier jour occupe deux places */
 .borne--double{grid-column:span 2}
-.borne--double .borne{aspect-ratio:auto;height:100%;min-height:5rem;border-radius:24% 24% 6px 6px / 36% 36% 6px 6px}
+.borne--double .borne{aspect-ratio:8/5;border-radius:24% 24% 6px 6px / 36% 36% 6px 6px}
 .borne__coiffe{
   position:relative;
   display:flex;align-items:flex-end;justify-content:center;
@@ -236,6 +236,7 @@ h1{
   box-shadow:0 5px 0 var(--fond-profond),0 0 0 3px var(--fond),0 0 0 6px var(--or);
   animation:appel 2.4s ease-in-out infinite;
 }
+.borne[data-etat="presentation"]{--coiffe:#2F9068}
 .borne[data-etat="terminee"]{--corps:#C98A8F;--chiffre:#5E0A18;--coiffe:#7A1022;cursor:default;box-shadow:none}
 .borne[data-etat="terminee"] .borne__coiffe::before{opacity:.75}
 /* La case du jour fait signe */
@@ -446,6 +447,7 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
   .scene{height:14vh;margin:0 0 2.6vh;border-radius:1.4vh}
 
   .plateau{container-type:size;min-height:0}
+  .borne--double .borne{aspect-ratio:auto;height:100%}
   .bornes{
     --g:1.5cqw;
     --u:min(calc((100cqw - (var(--colonnes,10) - 1) * var(--g)) / var(--colonnes,10)),calc((100cqh - var(--g) - 12px) / 2 * .75));
@@ -641,6 +643,8 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
     var demande = new URLSearchParams(location.search).get("apercu");
     if (demande && /^\d{4}-\d{2}-\d{2}$/.test(demande) && !isNaN(enTemps(demande))) { apercu = demande; aujourdhui = demande; }
   }
+  // Mode présentation (?presentation) : toutes les cases s'ouvrent, pour expliquer le principe
+  var presentation = !!cfg.apercuAutorise && new URLSearchParams(location.search).has("presentation");
 
   /* ---------- Cadeaux : une liste sans date, tirée au sort à chaque ouverture ---------- */
   function chancesDe(c) {
@@ -652,11 +656,17 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
     return plusJours(aujourdhui, DUREE - 1);
   }
   // Un cadeau dont la date de fin est déjà passée ne sort plus
-  var reserve = (donnees.cadeaux || []).filter(function (c) {
+  var valables = (donnees.cadeaux || []).filter(function (c) {
     return c && c.titre && chancesDe(c) > 0 && finDeValidite(c) >= aujourdhui;
   });
-  function tirer() {
-    var total = 0, i;
+  // Un cadeau réservé à un jour (réglage "jour") est le seul possible ce jour-là,
+  // et ne sort jamais les autres jours
+  function reserveDu(jour) {
+    var auJour = valables.filter(function (c) { return +c.jour === jour; });
+    return auJour.length ? auJour : valables.filter(function (c) { return !c.jour; });
+  }
+  function tirer(jour) {
+    var reserve = reserveDu(jour), total = 0, i;
     for (i = 0; i < reserve.length; i++) total += chancesDe(reserve[i]);
     if (!total) return null;
     var r = Math.random() * total;
@@ -664,15 +674,17 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
     return reserve[reserve.length - 1];
   }
   function etatDe(jour) {
+    if (presentation) return "presentation";
     var d = dateDuJour(jour);
     if (aujourdhui < d) return "verrou";
     return aujourdhui > d ? "terminee" : "jour";
   }
-  var LIBELLES = { verrou: "déc.", jour: "Aujourd'hui", terminee: "Terminée" };
+  var LIBELLES = { verrou: "déc.", jour: "Aujourd'hui", terminee: "Terminée", presentation: "À ouvrir" };
   var VOIX = {
     verrou: "pas encore disponible",
     jour: "case du jour, à ouvrir",
-    terminee: "case passée"
+    terminee: "case passée",
+    presentation: "à ouvrir (présentation)"
   };
 
   /* ---------- Affichage des cases ---------- */
@@ -709,11 +721,15 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
   $("mentions").textContent = cfg.mentions || "";
   $("mentions").hidden = !cfg.mentions;
   if (cfg.demo) $("bandeau-demo").hidden = false;
-  if (apercu) { $("bandeau-apercu").textContent = "Aperçu : le calendrier tel qu'il sera le " + enClair(apercu) + " " + apercu.slice(0, 4) + "."; $("bandeau-apercu").hidden = false; }
+  if (presentation) { $("bandeau-apercu").textContent = "Présentation : toutes les cases s'ouvrent. Pendant l'opération, seule la case du jour s'ouvrira."; $("bandeau-apercu").hidden = false; }
+  else if (apercu) { $("bandeau-apercu").textContent = "Aperçu : le calendrier tel qu'il sera le " + enClair(apercu) + " " + apercu.slice(0, 4) + "."; $("bandeau-apercu").hidden = false; }
 
   var premier = dateDuJour(1), dernier = dateDuJour(DERNIER);
   var etat = $("etat"), avance = 0;
-  if (aujourdhui < premier) {
+  if (presentation) {
+    etat.textContent = "Touchez une case pour découvrir le principe : suspens, puis un cadeau tiré au sort.";
+    avance = 0.5;
+  } else if (aujourdhui < premier) {
     var reste = ecart(aujourdhui, premier);
     etat.textContent = "Un cadeau par jour du 1er au " + DERNIER + " décembre. Première case à ouvrir " + (reste === 1 ? "demain." : "dans " + reste + " jours.");
   } else if (aujourdhui <= dernier) {
@@ -746,7 +762,7 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
     var e = etatDe(jour);
     if (e === "verrou") { dire("Cette case s'ouvre le " + enClair(dateDuJour(jour)) + "."); return; }
     if (e === "terminee") { dire("La case du " + enClair(dateDuJour(jour)) + " est passée."); return; }
-    remplir(jour, tirer());
+    remplir(jour, tirer(jour));
     toutArreter();
     message.textContent = "";
     if (SANS_ANIMATION) { phase("carte"); Sons.eclat(); }
@@ -889,7 +905,7 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
 
   /* ---------- Fonctionnement en continu sur un écran de caisse ---------- */
   // Au changement de jour, la page se recharge : nouvelle case et cadeaux à jour
-  if (!apercu) {
+  if (!apercu && !presentation) {
     setInterval(function () {
       if (aujourdhuiParis() !== aujourdhui && !fenetre.open) location.reload();
     }, 30000);
