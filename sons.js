@@ -222,6 +222,7 @@
       maitre.connect(comp); comp.connect(ctx.destination);
     }
     if (ctx.state === "suspended") ctx.resume();
+    debloquerIOS();
     return ctx;
   }
   function nouveauGroupe() {
@@ -308,6 +309,31 @@
     cycleFond();
   }
 
+  // iPhone et iPad coupent les sons des pages web quand le bouton « silencieux »
+  // est enclenché : on demande au système de traiter le calendrier comme un lecteur
+  // de musique, qui lui joue toujours.
+  var iosDebloque = false;
+  function debloquerIOS() {
+    if (iosDebloque) return;
+    iosDebloque = true;
+    try { if (navigator.audioSession) { navigator.audioSession.type = "playback"; return; } } catch (e) {}
+    var ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (!ios) return;
+    // anciens iOS : un fichier son muet, joué en boucle, ouvre la même porte
+    var silence = new Audio("data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==");
+    silence.loop = true;
+    silence.setAttribute("playsinline", "");
+    var p = silence.play(); if (p && p.catch) p.catch(function () {});
+  }
+
+  // Petit carillon d'essai, joué quand on réactive le son avec le bouton
+  function essai() {
+    if (!contexte()) return;
+    var g = nouveauGroupe(), t = ctx.currentTime + 0.03;
+    ["C6", "E6", "G6", "C7"].forEach(function (n, i) { boite(ctx, g, hz(n), t + i * 0.09, 0.3, 1.2); });
+    for (var x = 0; x < 0.45; x += 0.05) grelot(ctx, g, t + x, 0.4);
+  }
+
   function activer(oui) {
     actif = !!oui;
     if (maitre && ctx) maitre.gain.setTargetAtTime(actif ? volume : 0, ctx.currentTime, 0.05);
@@ -329,6 +355,7 @@
     eclat: eclat,
     arreter: function () { arreter(false); },
     demarrerFond: demarrerFond,
+    essai: essai,
     // utilisé seulement pour les essais (rendu hors ligne)
     _composer: { suspense: composerSuspense, eclat: composerEclat, fond: composerFond }
   };
