@@ -44,7 +44,7 @@ window.CALENDRIER = {
 
     // true = petite musique de Noël douce en continu entre deux ouvertures.
     // Elle démarre au premier toucher de l'écran (règle des navigateurs).
-    musiqueDeFond: true,
+    musiqueDeFond: false,
 
     // Pour utiliser vos propres sons à la place des sons intégrés, déposez le
     // fichier (mp3) dans le dépôt et indiquez son chemin, ex. "sons/ohoo.mp3".
@@ -54,6 +54,13 @@ window.CALENDRIER = {
     // true  = bandeau « Démonstration » affiché (cadeaux d'exemple)
     // false = vrais cadeaux saisis
     demo: false,
+
+    // true = jusqu'au 30 novembre, l'adresse normale est en mode présentation :
+    // toutes les cases s'ouvrent, pour montrer le principe aux équipes.
+    // Le 1er décembre, le vrai calendrier prend le relais tout seul.
+    // false = cases fermées avant le 1er décembre (à mettre si des écrans sont
+    // déjà visibles des clients en novembre).
+    presentationAvantOuverture: true,
 
     // true  = autorise l'aperçu d'une date en ajoutant ?apercu=2026-12-05 à l'adresse
     // false = à mettre au lancement, pour que l'aperçu ne fonctionne plus
