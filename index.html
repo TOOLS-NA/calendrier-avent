@@ -897,7 +897,7 @@ dialog[data-phase="carte"] .carte{display:block;animation:surgir .5s cubic-bezie
       sonActif = !sonActif;
       try { localStorage.setItem(CLE_SON, sonActif ? "1" : "0"); } catch (e) {}
       majSon();
-      if (sonActif) Sons.demarrerFond();
+      if (sonActif) { Sons.essai(); Sons.demarrerFond(); }
     });
     // Les navigateurs n'autorisent le son qu'après un premier toucher : la musique de fond démarre alors
     document.addEventListener("pointerdown", function () { Sons.demarrerFond(); }, { once: true, capture: true });
