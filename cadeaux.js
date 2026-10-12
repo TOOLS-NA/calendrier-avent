@@ -44,7 +44,7 @@ window.CALENDRIER = {
 
     // true = petite musique de Noël douce en continu entre deux ouvertures.
     // Elle démarre au premier toucher de l'écran (règle des navigateurs).
-    musiqueDeFond: false,
+    musiqueDeFond: true,
 
     // Pour utiliser vos propres sons à la place des sons intégrés, déposez le
     // fichier (mp3) dans le dépôt et indiquez son chemin, ex. "sons/ohoo.mp3".
